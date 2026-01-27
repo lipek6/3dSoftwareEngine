@@ -1,3 +1,4 @@
+#define OLC_PGE_APPLICATION
 #include "olcPixelGameEngine.h"
 
 // STRUCTS ===================================================================================
@@ -32,7 +33,7 @@ struct Matrix4x4
 
 
 // GAME ENGINE CLASS =========================================================================
-class Engine3D : public PixelGameEngine
+class Engine3D : public olc::PixelGameEngine
 {
 private:
     
@@ -59,7 +60,7 @@ private:
 public:
     Engine3D()
     {
-        m_sAppName = L"3D Demo";
+        sAppName = "3D Demo";
     }
 
 
@@ -116,7 +117,7 @@ public:
     
     bool OnUserUpdate(float fElapsedTime) override
     { 
-        Fill(0, 0, ScreenWidth(), ScreenHeight(), PIXEL_SOLID, FG_BLACK);
+        Clear(olc::BLACK);
         
         for (Triangle& tri : meshCube.vTriangle)
         {
@@ -144,7 +145,7 @@ public:
             DrawTriangle(triProjected.vertex[0].x, triProjected.vertex[0].y, 
                          triProjected.vertex[1].x, triProjected.vertex[1].y, 
                          triProjected.vertex[2].x, triProjected.vertex[2].y,
-                         PIXEL_SOLID, FG_WHITE);
+                         olc::WHITE);
         }
         
         return true; 
@@ -156,7 +157,7 @@ public:
 int main()
 {
     Engine3D demo;
-    if (demo.ConstructConsole(256, 240, 4, 4))
+    if (demo.Construct(256, 240, 4, 4))
         demo.Start();
     else
         return -1;

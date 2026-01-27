@@ -131,7 +131,6 @@
     <ClCompile Include="3dSoftwareEngine.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="olcConsoleGameEngine.h" />
     <ClInclude Include="olcPixelGameEngine.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
