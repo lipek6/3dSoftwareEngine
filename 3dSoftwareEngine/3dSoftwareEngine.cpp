@@ -1,4 +1,4 @@
-#include "olcConsoleGameEngine.h"
+#include "olcPixelGameEngine.h"
 
 // STRUCTS ===================================================================================
 
@@ -32,7 +32,7 @@ struct Matrix4x4
 
 
 // GAME ENGINE CLASS =========================================================================
-class Engine3D : public olcConsoleGameEngine
+class Engine3D : public PixelGameEngine
 {
 private:
     
@@ -68,28 +68,28 @@ public:
         // Creating a cube mesh --------------------------------------------------------------
         meshCube.vTriangle = {
             // South face
-            { (0.0f, 0.0f, 0.0f)   ,   (0.0f, 1.0f, 0.0f)   ,   (1.0f, 1.0f, 0.0f) },
-            { (0.0f, 0.0f, 0.0f)   ,   (1.0f, 1.0f, 0.0f)   ,   (1.0f, 0.0f, 0.0f) },
+            { 0.0f, 0.0f, 0.0f   ,   0.0f, 1.0f, 0.0f   ,   1.0f, 1.0f, 0.0f },
+            { 0.0f, 0.0f, 0.0f   ,   1.0f, 1.0f, 0.0f   ,   1.0f, 0.0f, 0.0f },
 
             // East face
-            { (1.0f, 0.0f, 0.0f)   ,   (1.0f, 1.0f, 0.0f)   ,   (1.0f, 1.0f, 1.0f) },
-            { (1.0f, 0.0f, 0.0f)   ,   (1.0f, 1.0f, 1.0f)   ,   (1.0f, 0.0f, 1.0f) },
+            { 1.0f, 0.0f, 0.0f   ,   1.0f, 1.0f, 0.0f   ,   1.0f, 1.0f, 1.0f },
+            { 1.0f, 0.0f, 0.0f   ,   1.0f, 1.0f, 1.0f   ,   1.0f, 0.0f, 1.0f },
 
             // North face
-            { (1.0f, 0.0f, 1.0f)   ,   (1.0f, 1.0f, 1.0f)   ,   (0.0f, 1.0f, 1.0f) },
-            { (1.0f, 0.0f, 1.0f)   ,   (0.0f, 1.0f, 1.0f)   ,   (0.0f, 0.0f, 1.0f) },
+            { 1.0f, 0.0f, 1.0f   ,   1.0f, 1.0f, 1.0f   ,   0.0f, 1.0f, 1.0f },
+            { 1.0f, 0.0f, 1.0f   ,   0.0f, 1.0f, 1.0f   ,   0.0f, 0.0f, 1.0f },
 
             // West face
-            { (0.0f, 0.0f, 1.0f)   ,   (0.0f, 1.0f, 1.0f)   ,   (0.0f, 1.0f, 0.0f) },
-            { (0.0f, 0.0f, 1.0f)   ,   (0.0f, 1.0f, 0.0f)   ,   (0.0f, 0.0f, 0.0f) },
+            { 0.0f, 0.0f, 1.0f   ,   0.0f, 1.0f, 1.0f   ,   0.0f, 1.0f, 0.0f },
+            { 0.0f, 0.0f, 1.0f   ,   0.0f, 1.0f, 0.0f   ,   0.0f, 0.0f, 0.0f },
 
             // Top face
-            { (0.0f, 1.0f, 0.0f)   ,   (0.0f, 1.0f, 1.0f)   ,   (1.0f, 1.0f, 1.0f) },
-            { (0.0f, 1.0f, 0.0f)   ,   (1.0f, 1.0f, 1.0f)   ,   (1.0f, 1.0f, 0.0f) },
+            { 0.0f, 1.0f, 0.0f   ,   0.0f, 1.0f, 1.0f   ,   1.0f, 1.0f, 1.0f },
+            { 0.0f, 1.0f, 0.0f   ,   1.0f, 1.0f, 1.0f   ,   1.0f, 1.0f, 0.0f },
 
             // Bottom face
-            { (1.0f, 0.0f, 1.0f)   ,   (0.0f, 0.0f, 1.0f)   ,   (0.0f, 0.0f, 0.0f) },
-            { (1.0f, 0.0f, 1.0f)   ,   (0.0f, 0.0f, 0.0f)   ,   (1.0f, 0.0f, 0.0f) }
+            { 1.0f, 0.0f, 1.0f   ,   0.0f, 0.0f, 1.0f   ,   0.0f, 0.0f, 0.0f },
+            { 1.0f, 0.0f, 1.0f   ,   0.0f, 0.0f, 0.0f   ,   1.0f, 0.0f, 0.0f }
         };
         
 
@@ -116,7 +116,7 @@ public:
     
     bool OnUserUpdate(float fElapsedTime) override
     { 
-        Fill(0, 0, m_nScreenWidth, m_nScreenHeight, PIXEL_SOLID, FG_BLACK);
+        Fill(0, 0, ScreenWidth(), ScreenHeight(), PIXEL_SOLID, FG_BLACK);
         
         for (Triangle& tri : meshCube.vTriangle)
         {
@@ -126,9 +126,10 @@ public:
             MultiplyMatrixVector(tri.vertex[2], triProjected.vertex[2], matProjection);
 
             // Scale into console view
-            triProjected.vertex[0].x += 1.0f; triProjected.vertex[0].y += 1.0f;
-            triProjected.vertex[1].x += 1.0f; triProjected.vertex[1].y += 1.0f;
-            triProjected.vertex[2].x += 1.0f; triProjected.vertex[2].y += 1.0f;
+            float offset = 1.0f;
+            triProjected.vertex[0].x += offset; triProjected.vertex[0].y += offset;
+            triProjected.vertex[1].x += offset; triProjected.vertex[1].y += offset;
+            triProjected.vertex[2].x += offset; triProjected.vertex[2].y += offset;
 
             triProjected.vertex[0].x *= 0.5f * (float)ScreenWidth ();
             triProjected.vertex[0].y *= 0.5f * (float)ScreenHeight();
