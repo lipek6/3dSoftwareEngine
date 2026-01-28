@@ -1,3 +1,7 @@
+// This code only exists because of the amazing lectures of Javidx9/OneLoneCoder. Thanks mate, you made me brave enough to 
+// get into low level game programming and 3D graphics programming. For anyone reading this, please take a look at his channel:
+// https://www.youtube.com/@javidx9 The "Code-it-yourself" playlist is incredible and a lot helpfull.
+
 #define OLC_PGE_APPLICATION
 #include "olcPixelGameEngine.h"
 
@@ -144,7 +148,7 @@ public:
         for (Triangle& tri : meshCube.vTriangle)
         {
 
-            // Rotate the object
+            // Rotate the object            NOTE: I NEED TO TRY TO UNDERSTAND THIS BETTER
             Triangle triRotatedZ;
             MultiplyMatrixVector(tri.vertex[0], triRotatedZ.vertex[0], matRotateZ);
             MultiplyMatrixVector(tri.vertex[1], triRotatedZ.vertex[1], matRotateZ);
