@@ -37,6 +37,7 @@ class Engine3D : public olc::PixelGameEngine
 {
 private:
     
+    float fTheta;
     Mesh meshCube;
     Matrix4x4 matProjection;
 
@@ -98,7 +99,7 @@ public:
         float fNear        = 0.1f;                                                  // User face distance to the screen
         float fFar         = 1000.0f;                                               // Greatest distance of the Z axis able to be seen
         float fFov         = 90.0f;                                                 // Theta angle that defines the Field of view
-        float fAspectRatio = (float)ScreenHeight() / (float)ScreenWidth();          // Screen aspect ratio based on the console window size
+        float fAspectRatio = (float)ScreenHeight() / (float)ScreenWidth();          // Screen aspect ratio based on the window size
         float fFovScaleRad = 1.0f / std::tanf(fFov * 0.5f / 180.0f * 3.14159f);     // FOV scaling factor in radians NOTE: (3.14159f can be abstracted as PI latter)
 
 
@@ -118,15 +119,57 @@ public:
     bool OnUserUpdate(float fElapsedTime) override
     { 
         Clear(olc::BLACK);
+      
+        Matrix4x4 matRotateZ, matRotateX;
         
+        fTheta += 1.0f * fElapsedTime;
+
+        // Rotation Z
+        matRotateZ.matrix[0][0] =  cosf(fTheta);
+        matRotateZ.matrix[0][1] =  sinf(fTheta);
+        matRotateZ.matrix[1][0] = -sinf(fTheta);
+        matRotateZ.matrix[1][1] =  cosf(fTheta);
+        matRotateZ.matrix[2][2] =  1; 
+        matRotateZ.matrix[3][3] =  1;
+
+        // Rotation X
+        matRotateX.matrix[0][0] =  1;
+        matRotateX.matrix[1][1] =  cosf(fTheta * 0.5f);
+        matRotateX.matrix[1][2] =  sinf(fTheta * 0.5f);
+        matRotateX.matrix[2][1] = -sinf(fTheta * 0.5f);
+        matRotateX.matrix[2][2] =  cosf(fTheta * 0.5f);
+        matRotateX.matrix[3][3] =  1;
+
+
         for (Triangle& tri : meshCube.vTriangle)
         {
-            Triangle triProjected;
-            MultiplyMatrixVector(tri.vertex[0], triProjected.vertex[0], matProjection);
-            MultiplyMatrixVector(tri.vertex[1], triProjected.vertex[1], matProjection);
-            MultiplyMatrixVector(tri.vertex[2], triProjected.vertex[2], matProjection);
 
-            // Scale into console view
+            // Rotate the object
+            Triangle triRotatedZ;
+            MultiplyMatrixVector(tri.vertex[0], triRotatedZ.vertex[0], matRotateZ);
+            MultiplyMatrixVector(tri.vertex[1], triRotatedZ.vertex[1], matRotateZ);
+            MultiplyMatrixVector(tri.vertex[2], triRotatedZ.vertex[2], matRotateZ);
+            Triangle triRotatedZX;
+            MultiplyMatrixVector(triRotatedZ.vertex[0], triRotatedZX.vertex[0], matRotateX);
+            MultiplyMatrixVector(triRotatedZ.vertex[1], triRotatedZX.vertex[1], matRotateX);
+            MultiplyMatrixVector(triRotatedZ.vertex[2], triRotatedZX.vertex[2], matRotateX);
+
+
+            // Translate the triangles on the Z axis to remove the camera from its inside
+            Triangle triTranslated = triRotatedZX;
+            triTranslated.vertex[0].z = triRotatedZX.vertex[0].z + 3.0f;
+            triTranslated.vertex[1].z = triRotatedZX.vertex[1].z + 3.0f;
+            triTranslated.vertex[2].z = triRotatedZX.vertex[2].z + 3.0f;
+
+            
+            // Run all vertexis of the translated and rotated triangles on the projection matrix
+            Triangle triProjected;
+            MultiplyMatrixVector(triTranslated.vertex[0], triProjected.vertex[0], matProjection);
+            MultiplyMatrixVector(triTranslated.vertex[1], triProjected.vertex[1], matProjection);
+            MultiplyMatrixVector(triTranslated.vertex[2], triProjected.vertex[2], matProjection);
+
+
+            // Scale the result into the console view
             float offset = 1.0f;
             triProjected.vertex[0].x += offset; triProjected.vertex[0].y += offset;
             triProjected.vertex[1].x += offset; triProjected.vertex[1].y += offset;
@@ -142,6 +185,7 @@ public:
             triProjected.vertex[2].y *= 0.5f * (float)ScreenHeight();
 
 
+            // Draw the triangles to the screen
             DrawTriangle(triProjected.vertex[0].x, triProjected.vertex[0].y, 
                          triProjected.vertex[1].x, triProjected.vertex[1].y, 
                          triProjected.vertex[2].x, triProjected.vertex[2].y,
