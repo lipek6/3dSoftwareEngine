@@ -41,9 +41,14 @@ class Engine3D : public olc::PixelGameEngine
 {
 private:
     
-    float fTheta;
     Mesh meshCube;
     Matrix4x4 matProjection;
+    
+
+    Vec3d vCamera = { 0 };
+    
+    
+    float fTheta = 0;
 
     // Multiply a 3D vector with a 4x4 matrix and writes the result into outVector 
     void MultiplyMatrixVector(Vec3d &inVector, Vec3d &outVector, Matrix4x4 &inMatrix)
@@ -124,7 +129,7 @@ public:
     { 
         Clear(olc::BLACK);
       
-        Matrix4x4 matRotateZ, matRotateX;
+        Matrix4x4 matRotateZ = { 0 }, matRotateX = { 0 };
         
         fTheta += 1.0f * fElapsedTime;
 
@@ -165,37 +170,63 @@ public:
             triTranslated.vertex[1].z = triRotatedZX.vertex[1].z + 3.0f;
             triTranslated.vertex[2].z = triRotatedZX.vertex[2].z + 3.0f;
 
-            
-            // Run all vertexis of the translated and rotated triangles on the projection matrix
-            Triangle triProjected;
-            MultiplyMatrixVector(triTranslated.vertex[0], triProjected.vertex[0], matProjection);
-            MultiplyMatrixVector(triTranslated.vertex[1], triProjected.vertex[1], matProjection);
-            MultiplyMatrixVector(triTranslated.vertex[2], triProjected.vertex[2], matProjection);
+
+            // Cross product to calculate the normals and find the faces that are visible
+            Vec3d normal, line1, line2;
+            line1.x = triRotatedZX.vertex[1].x - triRotatedZX.vertex[0].x;
+            line1.y = triRotatedZX.vertex[1].y - triRotatedZX.vertex[0].y;
+            line1.z = triRotatedZX.vertex[1].z - triRotatedZX.vertex[0].z;
+
+            line2.x = triRotatedZX.vertex[2].x - triRotatedZX.vertex[0].x;
+            line2.y = triRotatedZX.vertex[2].y - triRotatedZX.vertex[0].y;
+            line2.z = triRotatedZX.vertex[2].z - triRotatedZX.vertex[0].z;
+
+            normal.x = line1.y * line2.z - line1.z * line2.y;
+            normal.y = line1.z * line2.x - line1.x * line2.z;
+            normal.z = line1.x * line2.y - line1.y * line2.x;
+
+            float normalLength = sqrtf(normal.x * normal.x + normal.y * normal.y + normal.z * normal.z);
+            normal.x /= normalLength;
+            normal.y /= normalLength;
+            normal.z /= normalLength;
 
 
-            // Scale the result into the console view
-            float offset = 1.0f;
-            triProjected.vertex[0].x += offset; triProjected.vertex[0].y += offset;
-            triProjected.vertex[1].x += offset; triProjected.vertex[1].y += offset;
-            triProjected.vertex[2].x += offset; triProjected.vertex[2].y += offset;
-
-            triProjected.vertex[0].x *= 0.5f * (float)ScreenWidth ();
-            triProjected.vertex[0].y *= 0.5f * (float)ScreenHeight();
-
-            triProjected.vertex[1].x *= 0.5f * (float)ScreenWidth ();
-            triProjected.vertex[1].y *= 0.5f * (float)ScreenHeight();
-            
-            triProjected.vertex[2].x *= 0.5f * (float)ScreenWidth ();
-            triProjected.vertex[2].y *= 0.5f * (float)ScreenHeight();
+            // If the triangle is visible (DOT PRODUCT between the camera and the normal of the triangle, based on its plane) draw it
+            if (normal.x * (triTranslated.vertex[0].x - vCamera.x) +                                // triTranslated.vertex[0].x - vCamera.x == Line from the camera to the face of the triangle
+                normal.y * (triTranslated.vertex[0].y - vCamera.y) +
+                normal.z* (triTranslated.vertex[0].z - vCamera.z) < 0.0f) 
+            {
+                // Run all vertexis of the translated and rotated triangles on the projection matrix (3D --> 2D)
+                Triangle triProjected;
+                MultiplyMatrixVector(triTranslated.vertex[0], triProjected.vertex[0], matProjection);
+                MultiplyMatrixVector(triTranslated.vertex[1], triProjected.vertex[1], matProjection);
+                MultiplyMatrixVector(triTranslated.vertex[2], triProjected.vertex[2], matProjection);
 
 
-            // Draw the triangles to the screen
-            DrawTriangle(triProjected.vertex[0].x, triProjected.vertex[0].y, 
-                         triProjected.vertex[1].x, triProjected.vertex[1].y, 
-                         triProjected.vertex[2].x, triProjected.vertex[2].y,
-                         olc::WHITE);
+                // Scale the result into the console view
+                float offset = 1.0f;
+                triProjected.vertex[0].x += offset; triProjected.vertex[0].y += offset;
+                triProjected.vertex[1].x += offset; triProjected.vertex[1].y += offset;
+                triProjected.vertex[2].x += offset; triProjected.vertex[2].y += offset;
+
+                triProjected.vertex[0].x *= 0.5f * (float)ScreenWidth();
+                triProjected.vertex[0].y *= 0.5f * (float)ScreenHeight();
+
+                triProjected.vertex[1].x *= 0.5f * (float)ScreenWidth();
+                triProjected.vertex[1].y *= 0.5f * (float)ScreenHeight();
+
+                triProjected.vertex[2].x *= 0.5f * (float)ScreenWidth();
+                triProjected.vertex[2].y *= 0.5f * (float)ScreenHeight();
+
+
+                // Draw the triangles to the screen
+                FillTriangle(triProjected.vertex[0].x, triProjected.vertex[0].y,
+                    triProjected.vertex[1].x, triProjected.vertex[1].y,
+                    triProjected.vertex[2].x, triProjected.vertex[2].y,
+                    olc::WHITE);
+            }
         }
-        
+
         return true; 
     }
 };
