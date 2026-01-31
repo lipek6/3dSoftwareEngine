@@ -133,6 +133,11 @@
   <ItemGroup>
     <ClInclude Include="olcPixelGameEngine.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Object Include="Mech01_Official01.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </Object>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

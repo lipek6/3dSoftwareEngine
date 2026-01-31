@@ -4,6 +4,12 @@
 
 #define OLC_PGE_APPLICATION
 #include "olcPixelGameEngine.h"
+#include <fstream>
+#include <sstream>
+#include <algorithm>
+
+#define MAX_INLINE_CHARS_OBJFILE 128
+
 
 // STRUCTS ===================================================================================
 
@@ -18,6 +24,8 @@ struct Vec3d
 struct Triangle
 {
     Vec3d vertex[3];
+
+    olc::Pixel color;
 };
 
 
@@ -25,6 +33,45 @@ struct Triangle
 struct Mesh             
 {
     std::vector<Triangle> vTriangle;
+
+    // Load a .obj type of file into a mesh
+    bool LoadFromObjectFile(std::string sFilename)
+    {
+        std::ifstream file(sFilename);
+        if (!file.is_open())
+            return false;
+
+
+        std::vector<Vec3d> vVertex;     // Pool to store the vertecis data
+        while (!file.eof())
+        {
+            char line[MAX_INLINE_CHARS_OBJFILE];
+            file.getline(line, MAX_INLINE_CHARS_OBJFILE);
+            
+            std::stringstream lineStream; lineStream << line;
+    
+            if (line[0] == 'v')
+            {
+                char dataType;
+                Vec3d vertex;
+
+                lineStream >> dataType >> vertex.x >> vertex.y >> vertex.z;
+                vVertex.push_back(vertex);
+            }
+            else if (line[0] == 'f')
+            {
+                char dataType;
+                size_t idx0, idx1, idx2;
+
+                lineStream >> dataType >> idx0 >> idx1 >> idx2;
+                vTriangle.push_back({ vVertex[idx0 - 1], vVertex[idx1 - 1], vVertex[idx2 - 1] });
+            }
+        }
+
+
+        file.close();
+        return true;
+    }
 };
 
 
@@ -42,6 +89,7 @@ class Engine3D : public olc::PixelGameEngine
 private:
     
     Mesh meshCube;
+    Mesh meshMech;
     Matrix4x4 matProjection;
     
 
@@ -65,6 +113,13 @@ private:
             outVector.z /= w;
         }
     }
+
+    // Input parameter lum must be between 0 and 1 - i.e. [0, 1] (normalized)
+    olc::Pixel GetColor(float lum)
+    {
+        int nValue = (int)(std::max(lum, 0.20f) * 255.0f);
+        return olc::Pixel(nValue, nValue, nValue);
+    }
     
 
 public:
@@ -76,7 +131,13 @@ public:
 
     bool OnUserCreate() override 
     {
-        // Creating a cube mesh --------------------------------------------------------------
+        // Loading cool ass mech -------------------------------------------------------------
+        if (meshMech.LoadFromObjectFile("Mech01_Official01.obj"))
+            std::cout << "'.obj file' Loaded Sucessfully" << std::endl;
+        else
+            std::cout << "Error loading '.obj file' - Unable to open it" << std::endl;
+
+        // Creating a cube mesh (CLOCKWISE) --------------------------------------------------
         meshCube.vTriangle = {
             // South face
             { 0.0f, 0.0f, 0.0f   ,   0.0f, 1.0f, 0.0f   ,   1.0f, 1.0f, 0.0f },
@@ -150,7 +211,8 @@ public:
         matRotateX.matrix[3][3] =  1;
 
 
-        for (Triangle& tri : meshCube.vTriangle)
+        std::vector<Triangle> vTrianglesToRasterize;
+        for (Triangle& tri : meshMech.vTriangle)
         {
 
             // Rotate the object            NOTE: I NEED TO TRY TO UNDERSTAND THIS BETTER
@@ -164,11 +226,12 @@ public:
             MultiplyMatrixVector(triRotatedZ.vertex[2], triRotatedZX.vertex[2], matRotateX);
 
 
-            // Translate the triangles on the Z axis to remove the camera from its inside
+            // Translate the triangles on the Z axis to remove the camera from its insides
+            float zOffset = 100.0f;
             Triangle triTranslated = triRotatedZX;
-            triTranslated.vertex[0].z = triRotatedZX.vertex[0].z + 3.0f;
-            triTranslated.vertex[1].z = triRotatedZX.vertex[1].z + 3.0f;
-            triTranslated.vertex[2].z = triRotatedZX.vertex[2].z + 3.0f;
+            triTranslated.vertex[0].z = triRotatedZX.vertex[0].z + zOffset;
+            triTranslated.vertex[1].z = triRotatedZX.vertex[1].z + zOffset;
+            triTranslated.vertex[2].z = triRotatedZX.vertex[2].z + zOffset;
 
 
             // Cross product to calculate the normals and find the faces that are visible
@@ -184,8 +247,8 @@ public:
             normal.x = line1.y * line2.z - line1.z * line2.y;
             normal.y = line1.z * line2.x - line1.x * line2.z;
             normal.z = line1.x * line2.y - line1.y * line2.x;
-
-            float normalLength = sqrtf(normal.x * normal.x + normal.y * normal.y + normal.z * normal.z);
+           
+            float normalLength = sqrtf(normal.x * normal.x + normal.y * normal.y + normal.z * normal.z);    // Normalizing the normal.
             normal.x /= normalLength;
             normal.y /= normalLength;
             normal.z /= normalLength;
@@ -194,14 +257,28 @@ public:
             // If the triangle is visible (DOT PRODUCT between the camera and the normal of the triangle, based on its plane) draw it
             if (normal.x * (triTranslated.vertex[0].x - vCamera.x) +                                // triTranslated.vertex[0].x - vCamera.x == Line from the camera to the face of the triangle
                 normal.y * (triTranslated.vertex[0].y - vCamera.y) +
-                normal.z* (triTranslated.vertex[0].z - vCamera.z) < 0.0f) 
+                normal.z * (triTranslated.vertex[0].z - vCamera.z) < 0.0f) 
             {
+                // Illumination process
+                Vec3d ligthDirection = { 0.0f, 0.0f, -1.0f };
+
+                float ligthDirectionLength = sqrtf(ligthDirection.x * ligthDirection.x + ligthDirection.y * ligthDirection.y + ligthDirection.z * ligthDirection.z);    // Normalizing the ligth
+                ligthDirection.x /= ligthDirectionLength;
+                ligthDirection.y /= ligthDirectionLength;
+                ligthDirection.z /= ligthDirectionLength;
+
+                float dpLigthNormal = ligthDirection.x * normal.x + ligthDirection.y * normal.y + ligthDirection.z * normal.z;  // Dot product (dp) between the ligth direction and the normal
+
+
+                // Choose the color of the triangle
+                triTranslated.color = GetColor(dpLigthNormal);  // GetColor gets a value between 0 and 1, 
+
                 // Run all vertexis of the translated and rotated triangles on the projection matrix (3D --> 2D)
                 Triangle triProjected;
                 MultiplyMatrixVector(triTranslated.vertex[0], triProjected.vertex[0], matProjection);
                 MultiplyMatrixVector(triTranslated.vertex[1], triProjected.vertex[1], matProjection);
                 MultiplyMatrixVector(triTranslated.vertex[2], triProjected.vertex[2], matProjection);
-
+                triProjected.color = triTranslated.color;
 
                 // Scale the result into the console view
                 float offset = 1.0f;
@@ -218,14 +295,44 @@ public:
                 triProjected.vertex[2].x *= 0.5f * (float)ScreenWidth();
                 triProjected.vertex[2].y *= 0.5f * (float)ScreenHeight();
 
+                // Store Triangles for sorting
+                vTrianglesToRasterize.push_back(triProjected);
 
-                // Draw the triangles to the screen
-                FillTriangle(triProjected.vertex[0].x, triProjected.vertex[0].y,
-                    triProjected.vertex[1].x, triProjected.vertex[1].y,
-                    triProjected.vertex[2].x, triProjected.vertex[2].y,
-                    olc::WHITE);
+                // Draw/Rasterize the triangles to the screen
+                // FillTriangle(triProjected.vertex[0].x, triProjected.vertex[0].y,
+                //   triProjected.vertex[1].x, triProjected.vertex[1].y,
+                //   triProjected.vertex[2].x, triProjected.vertex[2].y,
+                //   triProjected.color);
+                //DrawTriangle(triProjected.vertex[0].x, triProjected.vertex[0].y,
+                //    triProjected.vertex[1].x, triProjected.vertex[1].y,
+                //    triProjected.vertex[2].x, triProjected.vertex[2].y,
+                //    olc::BLACK);
             }
         }
+
+        // Sort in ascending order 
+        std::sort(vTrianglesToRasterize.begin(), vTrianglesToRasterize.end(), [](const Triangle &triangle0, const Triangle &triangle1)
+        {
+            float midPointZ0 = (triangle0.vertex[0].z + triangle0.vertex[1].z + triangle0.vertex[2].z) / 3.0f;
+            float midPointZ1 = (triangle1.vertex[0].z + triangle1.vertex[1].z + triangle1.vertex[2].z) / 3.0f;
+
+            return midPointZ0 > midPointZ1;         // If Z0 is greater than Z1, swap them in the vector
+        });
+        
+        // Draw/Rasterize the triangles to the screen
+        for (auto& triProjected : vTrianglesToRasterize)
+        {
+            FillTriangle(triProjected.vertex[0].x, triProjected.vertex[0].y,
+                triProjected.vertex[1].x, triProjected.vertex[1].y,
+                triProjected.vertex[2].x, triProjected.vertex[2].y,
+                triProjected.color);
+            //DrawTriangle(triProjected.vertex[0].x, triProjected.vertex[0].y,
+            //    triProjected.vertex[1].x, triProjected.vertex[1].y,
+            //    triProjected.vertex[2].x, triProjected.vertex[2].y,
+            //    olc::BLACK);
+
+        }
+
 
         return true; 
     }
@@ -240,4 +347,11 @@ int main()
         demo.Start();
     else
         return -1;
+
+    // HIGH DEF VERSION
+    //if (demo.Construct(1920, 1080, 1, 1))
+    //  demo.Start();
+    //else
+    //  return -1;
 }
+
