@@ -128,10 +128,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="3dSoftwareEngine.cpp" />
+    <ClCompile Include="Engine3d.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Matrix4x4.cpp" />
+    <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="Vec3d.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Engine3d.h" />
+    <ClInclude Include="Matrix4x4.h" />
+    <ClInclude Include="Mesh.h" />
     <ClInclude Include="olcPixelGameEngine.h" />
+    <ClInclude Include="Triangle.h" />
+    <ClInclude Include="Vec3d.h" />
   </ItemGroup>
   <ItemGroup>
     <Object Include="Mech01_Official01.obj">

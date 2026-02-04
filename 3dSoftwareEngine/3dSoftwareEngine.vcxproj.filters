@@ -21,9 +21,15 @@
     <ClCompile Include="3dSoftwareEngine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Vec3d.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="olcPixelGameEngine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Vec3d.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
