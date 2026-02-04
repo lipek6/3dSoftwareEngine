@@ -67,6 +67,7 @@ struct Mesh
         if (!file.is_open())
             return false;
 
+        vTriangle.clear();
 
         std::vector<Vec3d> vVertex;     // Pool to store the vertecis data
         while (!file.eof())
@@ -76,7 +77,7 @@ struct Mesh
             
             std::stringstream lineStream; lineStream << line;
     
-            if (line[0] == 'v')
+            if (line[0] == 'v' && line[1] == ' ')
             {
                 char dataType;
                 Vec3d vertex;
@@ -84,7 +85,7 @@ struct Mesh
                 lineStream >> dataType >> vertex.x >> vertex.y >> vertex.z;
                 vVertex.push_back(vertex);
             }
-            else if (line[0] == 'f')
+            else if (line[0] == 'f' && line[1] == ' ')
             {
                 char dataType;
                 size_t idx0, idx1, idx2;
@@ -217,7 +218,7 @@ private:
     // Creates the Projection Matrix using the given Field of view in degrees, the screen aspect ratio (h/w), the distance from the user to the screen and the max Z distance
     Matrix4x4 Matrix_MakeProjection(float fFovDegrees, float fAspectRatio, float fNear, float fFar)
     {
-        float fFovRad = 1.0f / tanf(fFovDegrees * 0.5f / 180.0f * 3.14159);
+        float fFovRad = 1.0f / tanf(fFovDegrees * 0.5f / 180.0f * 3.14159f);
         Matrix4x4 matrixProjection;
         matrixProjection.matrix[0][0] = fAspectRatio * fFovRad;
         matrixProjection.matrix[1][1] = fFovRad;
@@ -387,7 +388,7 @@ public:
         Clear(olc::BLACK);
         fTheta += 1.0f * fElapsedTime;
 
-        Matrix4x4 matRotateX   = Matrix_MakeRotationX  (fTheta);
+        Matrix4x4 matRotateX   = Matrix_MakeRotationX  (fTheta * 0.5f);
         Matrix4x4 matRotateZ   = Matrix_MakeRotationZ  (fTheta);                                                           
         Matrix4x4 matTranslate = Matrix_MakeTranslation(0.0f, 0.0f, 80.0f);
 
@@ -443,15 +444,21 @@ public:
                 triProjected.vertex[1] = Matrix_MultiplyVector(matProjection, triTransformed.vertex[1]);
                 triProjected.vertex[2] = Matrix_MultiplyVector(matProjection, triTransformed.vertex[2]);
                 
+                // Pass the color
+                triProjected.color = triTransformed.color;
+
+                //triProjected.vertex[0].x *= -1.0f;
+                //triProjected.vertex[1].x *= -1.0f;
+                //triProjected.vertex[2].x *= -1.0f;
+                //triProjected.vertex[0].y *= -1.0f;
+                //triProjected.vertex[1].y *= -1.0f;
+                //triProjected.vertex[2].y *= -1.0f;
+
 
                 // Normalise vectors
                 triProjected.vertex[0] = Vector_Div(triProjected.vertex[0], triProjected.vertex[0].w);
                 triProjected.vertex[1] = Vector_Div(triProjected.vertex[1], triProjected.vertex[1].w);
                 triProjected.vertex[2] = Vector_Div(triProjected.vertex[2], triProjected.vertex[2].w);
-
-
-                // Pass the color
-                triProjected.color = triTransformed.color;
 
 
 
@@ -496,6 +503,9 @@ public:
         // Draw/Rasterize the triangles to the screen
         for (auto& triProjected : vTrianglesToRasterize)
         {
+
+
+
             FillTriangle(triProjected.vertex[0].x, triProjected.vertex[0].y,
                          triProjected.vertex[1].x, triProjected.vertex[1].y,
                          triProjected.vertex[2].x, triProjected.vertex[2].y,
@@ -524,16 +534,16 @@ public:
 int main()
 {
     Engine3D demo;
-    //if (demo.Construct(256, 240, 4, 4))
-    //    demo.Start();
-    //else
-    //    return -1;
+    if (demo.Construct(256, 240, 4, 4))
+        demo.Start();
+    else
+        return -1;
 
     // HIGH DEF VERSION
-    if (demo.Construct(1920, 1080, 1, 1))
-      demo.Start();
-    else
-      return -1;
+    //if (demo.Construct(1920, 1080, 1, 1))
+    //  demo.Start();
+    //else
+    //  return -1;
 }
 
 
