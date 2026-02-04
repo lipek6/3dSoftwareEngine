@@ -333,7 +333,7 @@ private:
         Vec3d outVector;
         outVector.x = inVector1.y * inVector2.z - inVector1.z * inVector2.y;
         outVector.y = inVector1.z * inVector2.x - inVector1.x * inVector2.z;
-        outVector.z = inVector1.x * inVector2.y - inVector1.y * inVector2.z;
+        outVector.z = inVector1.x * inVector2.y - inVector1.y * inVector2.x;
         return outVector;
     }
 
@@ -416,7 +416,6 @@ public:
             Vec3d line2  = Vector_Sub(triTransformed.vertex[2], triTransformed.vertex[0]);
             Vec3d normal = Vector_CrossProduct(line1, line2);
             normal = Vector_Normalise(normal);
-
 
 
             Vec3d vCameraRay = Vector_Sub(triTransformed.vertex[0], vCamera);
