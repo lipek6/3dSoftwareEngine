@@ -31,14 +31,13 @@ float Vec3d::Length() const
 	return std::sqrtf(DotProduct(*this, *this));
 }
 
-Vec3d Vec3d::Normalise() const
+void Vec3d::Normalise()
 {
 	float length = Length();
+	
+	if (length == 0) return;
 
-	if (length == 0)
-		return { 0.0f, 0.0f, 0.0f };
-
-	return { x/length, y/ length, z/ length };
+	(*this) = (*this) / length;
 }
 
 float Vec3d::DotProduct(const Vec3d& inVector1, const Vec3d& inVector2)

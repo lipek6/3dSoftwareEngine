@@ -18,7 +18,7 @@ struct Vec3d
 	Vec3d operator/(const float scalar) const;			// thisVector / scalar
 
 	float Length() const;
-	Vec3d Normalise() const;
+	void Normalise();
 	static float DotProduct(const Vec3d& inVector1, const Vec3d& inVector2);
 	static Vec3d CrossProduct(const Vec3d& inVector1, const Vec3d& inVector2);
 };

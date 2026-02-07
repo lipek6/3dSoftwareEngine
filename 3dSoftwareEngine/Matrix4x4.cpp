@@ -94,3 +94,37 @@ Matrix4x4 Matrix4x4::MakeProjection(float fFovDegrees, float fAspectRatio, float
     matrixProjection.matrix[3][3] = 0.0f;
     return matrixProjection;
 }
+
+Matrix4x4 Matrix4x4::MakePointAt(const Vec3d& position, const Vec3d& target, const Vec3d& up)
+{
+    Vec3d newForward = target - position;
+    newForward.Normalise();
+
+    Vec3d newUp = up - (newForward * Vec3d::DotProduct(up, newForward));
+    newUp.Normalise();
+
+    Vec3d newRight = Vec3d::CrossProduct(newUp, newForward);
+
+    Matrix4x4 matPointAt;
+    matPointAt.matrix[0][0] = newRight.x;           matPointAt.matrix[0][1] = newRight.y;           matPointAt.matrix[0][2] = newRight.z;           matPointAt.matrix[0][3] = 0.0f;
+    matPointAt.matrix[1][0] = newUp.x;              matPointAt.matrix[1][1] = newUp.y;              matPointAt.matrix[1][2] = newUp.z;              matPointAt.matrix[1][3] = 0.0f;
+    matPointAt.matrix[2][0] = newForward.x;         matPointAt.matrix[2][1] = newForward.y;         matPointAt.matrix[2][2] = newForward.z;         matPointAt.matrix[2][3] = 0.0f;
+    matPointAt.matrix[3][0] = position.x;           matPointAt.matrix[3][1] = position.y;           matPointAt.matrix[3][2] = position.z;           matPointAt.matrix[3][3] = 1.0f;
+    return matPointAt;
+}
+
+Matrix4x4 Matrix4x4::MakeQuickInverse(const Matrix4x4& inMatrix)                                // Only for Rotation/Translation Matrices
+{
+    Matrix4x4 matQuickInv;
+    
+    matQuickInv.matrix[0][0] = inMatrix.matrix[0][0]; matQuickInv.matrix[0][1] = inMatrix.matrix[1][0]; matQuickInv.matrix[0][2] = inMatrix.matrix[2][0]; matQuickInv.matrix[0][3] = 0.0f;
+    matQuickInv.matrix[1][0] = inMatrix.matrix[0][1]; matQuickInv.matrix[1][1] = inMatrix.matrix[1][1]; matQuickInv.matrix[1][2] = inMatrix.matrix[2][1]; matQuickInv.matrix[1][3] = 0.0f;
+    matQuickInv.matrix[2][0] = inMatrix.matrix[0][2]; matQuickInv.matrix[2][1] = inMatrix.matrix[1][2]; matQuickInv.matrix[2][2] = inMatrix.matrix[2][2]; matQuickInv.matrix[2][3] = 0.0f;
+
+    matQuickInv.matrix[3][0] = -(inMatrix.matrix[3][0] * matQuickInv.matrix[0][0] + inMatrix.matrix[3][1] * matQuickInv.matrix[1][0] + inMatrix.matrix[3][2] * matQuickInv.matrix[2][0]);
+    matQuickInv.matrix[3][1] = -(inMatrix.matrix[3][0] * matQuickInv.matrix[0][1] + inMatrix.matrix[3][1] * matQuickInv.matrix[1][1] + inMatrix.matrix[3][2] * matQuickInv.matrix[2][1]);
+    matQuickInv.matrix[3][2] = -(inMatrix.matrix[3][0] * matQuickInv.matrix[0][2] + inMatrix.matrix[3][1] * matQuickInv.matrix[1][2] + inMatrix.matrix[3][2] * matQuickInv.matrix[2][2]);
+    matQuickInv.matrix[3][3] = 1.0f;
+    
+    return matQuickInv;
+}   

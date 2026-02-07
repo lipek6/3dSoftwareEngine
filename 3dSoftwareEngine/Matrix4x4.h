@@ -14,4 +14,6 @@ struct Matrix4x4
 	static Matrix4x4 MakeRotationZ(float fAngleRad);
 	static Matrix4x4 MakeTranslation(float x, float y, float z);
 	static Matrix4x4 MakeProjection(float fFovDegrees, float fAspectRatio, float fNear, float fFar);
+	static Matrix4x4 MakePointAt(const Vec3d& position, const Vec3d& target, const Vec3d& up);
+	static Matrix4x4 MakeQuickInverse(const Matrix4x4& inMatrix);
 };

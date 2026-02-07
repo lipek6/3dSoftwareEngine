@@ -15,7 +15,9 @@ olc::Pixel Engine3d::GetColor(float lum)
 
 bool Engine3d::OnUserCreate()
 {
-    meshMech.LoadFromObjectFile("Mech01_Official01.obj");
+    //meshMech.LoadFromObjectFile("Mech01.obj");
+    //meshMech.LoadFromObjectFile("UtahTeapot.obj");
+    meshMech.LoadFromObjectFile("OlcAxis.obj");
 
     matProjection = Matrix4x4::MakeProjection(90.0f, (float)ScreenHeight() / (float)ScreenWidth(), 0.1f, 1000.0f);
 
@@ -27,14 +29,18 @@ bool Engine3d::OnUserCreate()
 bool Engine3d::OnUserUpdate(float fElapsedTime)
 {
     Clear(olc::BLACK);
-    fTheta += 1.0f * fElapsedTime;
+     fTheta += 1.0f * fElapsedTime;
+    // fTheta += 0.1f * fElapsedTime;
 
     Matrix4x4 matRotateZ   = Matrix4x4::MakeRotationZ(fTheta);
     Matrix4x4 matRotateX   = Matrix4x4::MakeRotationX(fTheta * 0.5f);
-    Matrix4x4 matTranslate = Matrix4x4::MakeTranslation(0.0f, 0.0f, 80.0f);
+    //Matrix4x4 matTranslate = Matrix4x4::MakeTranslation(0.0f, 0.0f, 80.0f);
+    Matrix4x4 matTranslate = Matrix4x4::MakeTranslation(0.0f, 0.0f, 8.0f);
 
-    Matrix4x4 matWorld = matRotateZ * matRotateX * matTranslate;    // ERROR POSSIBLE
+    Matrix4x4 matWorld = matRotateZ * matRotateX * matTranslate; 
 
+    Vec3d vUp(0.0f, 1.0f, 0.0f);
+    Vec3d vTarget = vCamera + vLookDir;
 
     std::vector<Triangle> vTrianglesToRasterize;
     for (Triangle& tri : meshMech.vTriangle)
@@ -48,14 +54,14 @@ bool Engine3d::OnUserUpdate(float fElapsedTime)
         Vec3d line1 = triTransformed.vertex[1] - triTransformed.vertex[0];
         Vec3d line2 = triTransformed.vertex[2] - triTransformed.vertex[0];
         Vec3d normal = Vec3d::CrossProduct(line1, line2);
-        normal = normal.Normalise();
+        normal.Normalise();
 
         Vec3d vCameraRay = triTransformed.vertex[0] - vCamera;
 
         if (Vec3d::DotProduct(normal, vCameraRay) < 0.0f)
         {
             Vec3d ligthDirection(0.0f, 1.0f, -1.0f);
-            ligthDirection = ligthDirection.Normalise();
+            ligthDirection.Normalise();
 
             float dpLigthNormal = std::max(0.1f, Vec3d::DotProduct(ligthDirection, normal));
             triTransformed.color = GetColor(dpLigthNormal);
@@ -71,6 +77,12 @@ bool Engine3d::OnUserUpdate(float fElapsedTime)
             triProjected.vertex[1] = triProjected.vertex[1] / triProjected.vertex[1].w;
             triProjected.vertex[2] = triProjected.vertex[2] / triProjected.vertex[2].w;
 
+            triProjected.vertex[0].x *= -1.0f;
+            triProjected.vertex[1].x *= -1.0f;
+            triProjected.vertex[2].x *= -1.0f;
+            triProjected.vertex[0].y *= -1.0f;
+            triProjected.vertex[1].y *= -1.0f;
+            triProjected.vertex[2].y *= -1.0f;
 
 
             Vec3d vOffsetView(1.0f, 1.0f, 0.0f);

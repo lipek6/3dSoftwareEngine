@@ -12,6 +12,7 @@ private:
     Mesh meshMech;
     Matrix4x4 matProjection;
     Vec3d vCamera;
+    Vec3d vLookDir;
     float fTheta = 0;
 
 public:
