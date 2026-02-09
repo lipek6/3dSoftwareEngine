@@ -53,3 +53,19 @@ Vec3d Vec3d::CrossProduct(const Vec3d& inVector1, const Vec3d& inVector2)
 	outVector.z = inVector1.x * inVector2.y - inVector1.y * inVector2.x;
 	return outVector;
 }
+
+Vec3d Vec3d::IntersectPlane(Vec3d& planePoint, Vec3d& planeNormal, const Vec3d& lineStart, const Vec3d& lineEnd)
+{
+	planeNormal.Normalise();
+	
+	float planeDot = -(Vec3d::DotProduct(planeNormal, planePoint));	
+	float projectedStart = Vec3d::DotProduct(lineStart, planeNormal);
+	float projectedEnd = Vec3d::DotProduct(lineEnd, planeNormal);
+	
+	float t = (-planeDot - projectedStart) / (projectedEnd - projectedStart);
+
+	Vec3d lineStartToEnd = lineEnd - lineStart;
+	Vec3d lineToIntersect = lineStartToEnd * t;
+
+	return lineStart + lineToIntersect;
+}
