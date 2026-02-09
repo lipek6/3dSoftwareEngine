@@ -1,6 +1,6 @@
 #include "Triangle.h"
 
-int Triangle::ClipAgainstPlane(Vec3d& planePoint, Vec3d& planeNormal, Triangle& inTriangle, Triangle& outTriangle1, Triangle& outTriangle2)
+int Triangle::ClipAgainstPlane(Vec3d planePoint, Vec3d planeNormal, Triangle& inTriangle, Triangle& outTriangle1, Triangle& outTriangle2)
 {
 	planeNormal.Normalise();
 
@@ -58,7 +58,6 @@ int Triangle::ClipAgainstPlane(Vec3d& planePoint, Vec3d& planeNormal, Triangle& 
 		// the triangle simply becomes a smaller triangle
 
 		outTriangle1.color = inTriangle.color;
-		outTriangle1.color = olc::BLUE;
 
 		outTriangle1.vertex[0] = *insidePoints[0];
 		outTriangle1.vertex[1] = Vec3d::IntersectPlane(planePoint, planeNormal, *insidePoints[0], *outsidePoints[0]);
@@ -74,8 +73,6 @@ int Triangle::ClipAgainstPlane(Vec3d& planePoint, Vec3d& planeNormal, Triangle& 
 		// represent a quad with two new triangles
 
 		outTriangle1.color = inTriangle.color; outTriangle2.color = inTriangle.color;
-		outTriangle1.color = olc::GREEN;
-		outTriangle2.color = olc::RED;
 
 		outTriangle1.vertex[0] = *insidePoints[0];
 		outTriangle1.vertex[1] = *insidePoints[1];

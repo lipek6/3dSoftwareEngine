@@ -17,7 +17,8 @@ bool Engine3d::OnUserCreate()
 {
     //meshMech.LoadFromObjectFile("Mech01.obj");
     //meshMech.LoadFromObjectFile("UtahTeapot.obj");
-    meshMech.LoadFromObjectFile("OlcAxis.obj");
+    //meshMech.LoadFromObjectFile("OlcAxis.obj");
+    meshMech.LoadFromObjectFile("mountains.obj");
 
     matProjection = Matrix4x4::MakeProjection(90.0f, (float)ScreenHeight() / (float)ScreenWidth(), 0.1f, 1000.0f);
 
@@ -123,7 +124,7 @@ bool Engine3d::OnUserUpdate(float fElapsedTime)
             // CLIPPING ----------------------------------------------------------------------
             int nClippedTriangles = 0;
             Triangle triClipped[2];
-            Vec3d nearPlanePoint(0.0f, 0.0f, 1.1f);
+            Vec3d nearPlanePoint(0.0f, 0.0f, 0.1f);
             Vec3d nearPlaneNormal(0.0f, 0.0f, 1.0f);
 
             nClippedTriangles = Triangle::ClipAgainstPlane(nearPlanePoint, nearPlaneNormal, triViewed, triClipped[0], triClipped[1]); // Z CLIP
@@ -185,16 +186,42 @@ bool Engine3d::OnUserUpdate(float fElapsedTime)
     // RASTERIZATION =========================================================================
     for (auto& triToRaster : vTrianglesToRasterize)
     {
-        FillTriangle(triToRaster.vertex[0].x, triToRaster.vertex[0].y,
-            triToRaster.vertex[1].x, triToRaster.vertex[1].y,
-            triToRaster.vertex[2].x, triToRaster.vertex[2].y,
-            triToRaster.color);
+        // CLIPPING --------------------------------------------------------------------------
+        Triangle clipped[2];
+        std::list<Triangle> listTriangles;
+        listTriangles.push_back(triToRaster);
+        int nNewTriangles = 1;
+        
+        for (int plane = 0; plane < 4; plane++)
+        {
+            int nTrisToAdd = 0;
+            while (nNewTriangles > 0)
+            {
+                Triangle test = listTriangles.front();
+                listTriangles.pop_front();
+                nNewTriangles--;
 
-        DrawTriangle(triToRaster.vertex[0].x, triToRaster.vertex[0].y,
-            triToRaster.vertex[1].x, triToRaster.vertex[1].y,
-            triToRaster.vertex[2].x, triToRaster.vertex[2].y,
-            olc::BLACK);
+                switch (plane)
+                {
+                case 0: nTrisToAdd = Triangle::ClipAgainstPlane({ 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, test, clipped[0], clipped[1]); break;
+                case 1: nTrisToAdd = Triangle::ClipAgainstPlane({ 0.0f, (float)ScreenHeight() - 1, 0.0f }, { 0.0f, -1.0f, 0.0f }, test, clipped[0], clipped[1]); break;
+                case 2: nTrisToAdd = Triangle::ClipAgainstPlane({ 0.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, test, clipped[0], clipped[1]); break;
+                case 3: nTrisToAdd = Triangle::ClipAgainstPlane({ (float)ScreenWidth() - 1, 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f }, test, clipped[0], clipped[1]); break;
+                }
 
+                for (int w = 0; w < nTrisToAdd; w++)
+                    listTriangles.push_back(clipped[w]);
+            }
+            nNewTriangles = listTriangles.size();
+        }
+
+
+        // DRAW ------------------------------------------------------------------------------
+        for (const Triangle& tri : listTriangles)
+        {
+            FillTriangle(tri.vertex[0].x, tri.vertex[0].y, tri.vertex[1].x, tri.vertex[1].y, tri.vertex[2].x, tri.vertex[2].y, tri.color);
+            //DrawTriangle(tri.vertex[0].x, tri.vertex[0].y, tri.vertex[1].x, tri.vertex[1].y, tri.vertex[2].x, tri.vertex[2].y, olc::BLACK);
+        }
     }
 
     return true;

@@ -67,5 +67,8 @@
     <Object Include="OlcAxis.obj">
       <Filter>Assets</Filter>
     </Object>
+    <Object Include="mountains.obj">
+      <Filter>Assets</Filter>
+    </Object>
   </ItemGroup>
 </Project>
