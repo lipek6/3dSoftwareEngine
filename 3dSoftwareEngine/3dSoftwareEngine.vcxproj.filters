@@ -13,7 +13,7 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Assets">
+    <Filter Include="assets">
       <UniqueIdentifier>{263643dd-a4f4-43e9-90b3-189b53bf7563}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -56,19 +56,33 @@
     <ClInclude Include="Triangle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Vec2d.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Object Include="UtahTeapot.obj">
-      <Filter>Assets</Filter>
-    </Object>
-    <Object Include="Mech01.obj">
-      <Filter>Assets</Filter>
-    </Object>
-    <Object Include="OlcAxis.obj">
-      <Filter>Assets</Filter>
-    </Object>
-    <Object Include="mountains.obj">
-      <Filter>Assets</Filter>
-    </Object>
+    <Text Include="Mech01.obj">
+      <Filter>assets</Filter>
+    </Text>
+    <Text Include="Olcmountains.obj">
+      <Filter>assets</Filter>
+    </Text>
+    <Text Include="OlcAxis.obj">
+      <Filter>assets</Filter>
+    </Text>
+    <Text Include="UtahTeapot.obj">
+      <Filter>assets</Filter>
+    </Text>
+    <Text Include="assets\cube.obj">
+      <Filter>assets</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="assets\cardboard.png">
+      <Filter>assets</Filter>
+    </Image>
+    <Image Include="assets\Jario.png">
+      <Filter>assets</Filter>
+    </Image>
   </ItemGroup>
 </Project>

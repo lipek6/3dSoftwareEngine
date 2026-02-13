@@ -1,12 +1,12 @@
 #include "Mesh.h"
 
-bool Mesh::LoadFromObjectFile(std::string sFilename)
+/*bool Mesh::LoadFromObjectFile(std::string sFilename)
 {
     std::ifstream file(sFilename);
 
     if (!file.is_open())
     {
-        std::cout << "Error loading '.obj file' - Unable to open it" << std::endl;
+        std::cout << "Error loading " << sFilename <<" - Unable to open it" << std::endl;
         return false;
     }
 
@@ -43,4 +43,4 @@ bool Mesh::LoadFromObjectFile(std::string sFilename)
     std::cout << "'.obj file' Loaded Sucessfully" << std::endl;
     return true;
 
-}
+}*/

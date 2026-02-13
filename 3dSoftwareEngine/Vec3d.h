@@ -21,5 +21,5 @@ struct Vec3d
 	void Normalise();
 	static float DotProduct(const Vec3d& inVector1, const Vec3d& inVector2);
 	static Vec3d CrossProduct(const Vec3d& inVector1, const Vec3d& inVector2);
-	static Vec3d IntersectPlane(Vec3d& planePoint, Vec3d& planeNormal, const Vec3d& lineStart, const Vec3d& lineEnd);
+	static Vec3d IntersectPlane(Vec3d& planePoint, Vec3d& planeNormal, const Vec3d& lineStart, const Vec3d& lineEnd, float &t);
 };
