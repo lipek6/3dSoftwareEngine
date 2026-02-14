@@ -11,5 +11,5 @@ struct Mesh
 {
 	std::vector<Triangle> vTriangle;
 
-	bool LoadFromObjectFile(std::string sFilename);
+	bool LoadFromObjectFile(std::string sFilename, bool bHasTexture = false);
 };

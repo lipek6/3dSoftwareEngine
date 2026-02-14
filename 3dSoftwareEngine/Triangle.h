@@ -11,6 +11,7 @@ struct Triangle
 	olc::Pixel color;
 
 	Triangle() = default;
-	Triangle(Vec3d v1, Vec3d v2, Vec3d v3, Vec2d t1, Vec2d t2, Vec2d t3, olc::Pixel col);
+	Triangle(Vec3d v1, Vec3d v2, Vec3d v3, Vec2d t1, Vec2d t2, Vec2d t3, olc::Pixel col = olc::WHITE);
+	Triangle(Vec3d v1, Vec3d v2, Vec3d v3, olc::Pixel col = olc::WHITE);
 	static int ClipAgainstPlane(Vec3d planePoint, Vec3d planeNormal, Triangle &inTriangle, Triangle& outTriangle1, Triangle& outTriangle2);
 };

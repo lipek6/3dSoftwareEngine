@@ -2,10 +2,14 @@
 
 Triangle::Triangle(Vec3d v1, Vec3d v2, Vec3d v3, Vec2d t1, Vec2d t2, Vec2d t3, olc::Pixel col)
 	: vertex{ v1, v2, v3 }, 
-	 texture{ t1, t2, t3 }, 
-	 color(col) {}
+	  texture{ t1, t2, t3 }, 
+	  color(col) {}
 
 
+Triangle::Triangle(Vec3d v1, Vec3d v2, Vec3d v3, olc::Pixel col)
+	: vertex{ v1, v2, v3 },
+      texture{ {0,0}, {0,0}, {0,0} }, 
+	  color(col) {}
 
 
 int Triangle::ClipAgainstPlane(Vec3d planePoint, Vec3d planeNormal, Triangle& inTriangle, Triangle& outTriangle1, Triangle& outTriangle2)
@@ -125,9 +129,9 @@ int Triangle::ClipAgainstPlane(Vec3d planePoint, Vec3d planeNormal, Triangle& in
 
 		float t;
 		outTriangle1.vertex[2] = Vec3d::IntersectPlane(planePoint, planeNormal, *insidePoints[0], *outsidePoints[0], t);
-		outTriangle1.texture[1].u = t * (outsideTexture[0]->u - insideTexture[0]->u) + insideTexture[0]->u;
-		outTriangle1.texture[1].v = t * (outsideTexture[0]->v - insideTexture[0]->v) + insideTexture[0]->v;
-		outTriangle1.texture[1].w = t * (outsideTexture[0]->w - insideTexture[0]->w) + insideTexture[0]->w;
+		outTriangle1.texture[2].u = t * (outsideTexture[0]->u - insideTexture[0]->u) + insideTexture[0]->u;
+		outTriangle1.texture[2].v = t * (outsideTexture[0]->v - insideTexture[0]->v) + insideTexture[0]->v;
+		outTriangle1.texture[2].w = t * (outsideTexture[0]->w - insideTexture[0]->w) + insideTexture[0]->w;
 
 		outTriangle2.vertex[0] = *insidePoints[1];
 		outTriangle2.texture[0] = *insideTexture[1];

@@ -76,12 +76,18 @@
     <Text Include="assets\cube.obj">
       <Filter>assets</Filter>
     </Text>
+    <Text Include="assets\SpyroTriangulatedMap.obj">
+      <Filter>assets</Filter>
+    </Text>
   </ItemGroup>
   <ItemGroup>
     <Image Include="assets\cardboard.png">
       <Filter>assets</Filter>
     </Image>
     <Image Include="assets\Jario.png">
+      <Filter>assets</Filter>
+    </Image>
+    <Image Include="assets\SpyroMapHigh.png">
       <Filter>assets</Filter>
     </Image>
   </ItemGroup>

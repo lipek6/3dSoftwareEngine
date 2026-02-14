@@ -19,6 +19,8 @@ private:
 
     olc::Sprite* sprTexture1;
 
+    float* pDepthBuffer = nullptr;
+
 public:
     Engine3d();
 

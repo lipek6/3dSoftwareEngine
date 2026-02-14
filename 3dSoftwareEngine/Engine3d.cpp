@@ -15,13 +15,15 @@ olc::Pixel Engine3d::GetColor(float lum)
 
 bool Engine3d::OnUserCreate()
 {
+    pDepthBuffer = new float[ScreenHeight() * ScreenWidth()];
+
     //meshMech.LoadFromObjectFile("assets/Mech01.obj");
     //meshMech.LoadFromObjectFile("assets/UtahTeapot.obj");
     //meshMech.LoadFromObjectFile("assets/OlcAxis.obj");
     //meshMech.LoadFromObjectFile("assets/OlcMountains.obj");
-    //meshMech.LoadFromObjectFile("../3dSoftwareEngine/assets/cube.obj");
+    meshMech.LoadFromObjectFile("../3dSoftwareEngine/assets/SpyroTriangulatedMap.obj", true);
 
-    meshMech.vTriangle = {
+    /*meshMech.vTriangle = {
     
         // SOUTH
         Triangle({ {0.0f, 0.0f, 0.0f, 1.0f},    {0.0f, 1.0f, 0.0f, 1.0f},    {1.0f, 1.0f, 0.0f, 1.0f},		{0.0f, 1.0f, 1.0f},		{0.0f, 0.0f, 1.0f},		{1.0f, 0.0f, 1.0f}, olc::WHITE}),
@@ -46,9 +48,9 @@ bool Engine3d::OnUserCreate()
         // BOTTOM          																			  
         Triangle({ {1.0f, 0.0f, 1.0f, 1.0f},    {0.0f, 0.0f, 1.0f, 1.0f},    {0.0f, 0.0f, 0.0f, 1.0f},		{0.0f, 1.0f, 1.0f},		{0.0f, 0.0f, 1.0f},		{1.0f, 0.0f, 1.0f}, olc::WHITE}),
         Triangle({ {1.0f, 0.0f, 1.0f, 1.0f},    {0.0f, 0.0f, 0.0f, 1.0f},    {1.0f, 0.0f, 0.0f, 1.0f},		{0.0f, 1.0f, 1.0f},		{1.0f, 0.0f, 1.0f},		{1.0f, 1.0f, 1.0f}, olc::WHITE}),
-    };
+    };*/
 
-    sprTexture1 = new olc::Sprite("../3dSoftwareEngine/assets/Jario.png");
+    sprTexture1 = new olc::Sprite("../3dSoftwareEngine/assets/SpyroMapHigh.png");
 
     matProjection = Matrix4x4::MakeProjection(90.0f, (float)ScreenHeight() / (float)ScreenWidth(), 0.1f, 1000.0f);
 
@@ -89,12 +91,15 @@ bool Engine3d::OnUserUpdate(float fElapsedTime)
 
 
 
-    // RENDER SETUP ==========================================================================
-    Clear(olc::BLACK);
+
+
+        
+    
 
 
 
     // MATRICES CREATION =====================================================================
+    // fTheta += 1.0f * fElapsedTime;
     Matrix4x4 matRotateZ   = Matrix4x4::MakeRotationZ(fTheta);
     Matrix4x4 matRotateX   = Matrix4x4::MakeRotationX(fTheta * 0.5f);
     Matrix4x4 matTranslate = Matrix4x4::MakeTranslation(0.0f, 0.0f, 8.0f);
@@ -232,14 +237,26 @@ bool Engine3d::OnUserUpdate(float fElapsedTime)
     }
 
     
-    // PAINTERS ALGORITHM ====================================================================    
-    std::sort(vTrianglesToRasterize.begin(), vTrianglesToRasterize.end(), [](const Triangle& triangle0, const Triangle& triangle1)
-        {
-            float midPointZ0 = (triangle0.vertex[0].z + triangle0.vertex[1].z + triangle0.vertex[2].z) / 3.0f;
-            float midPointZ1 = (triangle1.vertex[0].z + triangle1.vertex[1].z + triangle1.vertex[2].z) / 3.0f;
+    // PAINTERS ALGORITHM ====================================================================    REMOVED FOR A DEPTH BUFFFER
+    //std::sort(vTrianglesToRasterize.begin(), vTrianglesToRasterize.end(), [](const Triangle& triangle0, const Triangle& triangle1)
+    //    {
+    //        float midPointZ0 = (triangle0.vertex[0].z + triangle0.vertex[1].z + triangle0.vertex[2].z) / 3.0f;
+    //        float midPointZ1 = (triangle1.vertex[0].z + triangle1.vertex[1].z + triangle1.vertex[2].z) / 3.0f;
+    //
+    //        return midPointZ0 > midPointZ1;         
+    //    });
 
-            return midPointZ0 > midPointZ1;         
-        });
+
+
+
+
+    // RENDER CLEANING ==========================================================================
+    Clear(olc::BLACK);
+    for (int i = 0; i < ScreenWidth() * ScreenHeight(); i++)
+        pDepthBuffer[i] = 0.0f;
+
+
+
 
 
     // RASTERIZATION =========================================================================
@@ -285,7 +302,7 @@ bool Engine3d::OnUserUpdate(float fElapsedTime)
                              sprTexture1);
 
             // FillTriangle(tri.vertex[0].x, tri.vertex[0].y, tri.vertex[1].x, tri.vertex[1].y, tri.vertex[2].x, tri.vertex[2].y, tri.color);
-            DrawTriangle(tri.vertex[0].x, tri.vertex[0].y, tri.vertex[1].x, tri.vertex[1].y, tri.vertex[2].x, tri.vertex[2].y, olc::WHITE);
+            // DrawTriangle(tri.vertex[0].x, tri.vertex[0].y, tri.vertex[1].x, tri.vertex[1].y, tri.vertex[2].x, tri.vertex[2].y, olc::WHITE);
         }
     }
 
@@ -300,39 +317,40 @@ void Engine3d::TexturedTriangle(int x1, int y1, float u1, float v1, float w1,
     olc::Sprite* texture)
 {
     // Sorting y1(highest y=0), y2(middle), y3(lowest y=1)
-    if (y1 > y2)
+    if (y2 < y1)
     {
-        std::swap(x1, x2);
         std::swap(y1, y2);
+        std::swap(x1, x2);
         std::swap(u1, u2);
         std::swap(v1, v2);
         std::swap(w1, w2);
     }
-    if (y1 > y3)
+
+    if (y3 < y1)
     {
-        std::swap(x1, x3);
         std::swap(y1, y3);
+        std::swap(x1, x3);
         std::swap(u1, u3);
         std::swap(v1, v3);
         std::swap(w1, w3);
     }
-    if (y2 > y3)
+
+    if (y3 < y2)
     {
-        std::swap(x2, x3);
         std::swap(y2, y3);
+        std::swap(x2, x3);
         std::swap(u2, u3);
         std::swap(v2, v3);
         std::swap(w2, w3);
     }
 
-
-    int   dy1 = y2 - y1;	// line1
+    int   dy1 = y2 - y1;
     int   dx1 = x2 - x1;
     float dv1 = v2 - v1;
     float du1 = u2 - u1;
     float dw1 = w2 - w1;
 
-    int   dy2 = y3 - y1;	// line2
+    int   dy2 = y3 - y1;
     int   dx2 = x3 - x1;
     float dv2 = v3 - v1;
     float du2 = u3 - u1;
@@ -340,27 +358,24 @@ void Engine3d::TexturedTriangle(int x1, int y1, float u1, float v1, float w1,
 
     float tex_u, tex_v, tex_w;
 
-    float dax_step = 0.0f, dbx_step = 0.0f,		// steps
-        du1_step = 0.0f, dv1_step = 0.0f,
-        du2_step = 0.0f, dv2_step = 0.0f,
-        dw1_step = 0.0f, dw2_step = 0.0f;
+    float dax_step = 0, dbx_step = 0,
+          du1_step = 0, dv1_step = 0,
+          du2_step = 0, dv2_step = 0,
+          dw1_step = 0, dw2_step = 0;
 
+    if (dy1) dax_step = dx1 / (float)abs(dy1);
+    if (dy2) dbx_step = dx2 / (float)abs(dy2);
 
-    if (dy1) dax_step = dx1 / (float)std::abs(dy1);
-    if (dy2) dbx_step = dx2 / (float)std::abs(dy2);
+    if (dy1) du1_step = du1 / (float)abs(dy1);
+    if (dy1) dv1_step = dv1 / (float)abs(dy1);
+    if (dy1) dw1_step = dw1 / (float)abs(dy1);
 
-    if (dy1) du1_step = du1 / (float)std::abs(dy1);
-    if (dy1) dv1_step = dv1 / (float)std::abs(dy1);
-    if (dy1) dw1_step = dw1 / (float)std::abs(dy1);
-
-    if (dy2) du2_step = du2 / (float)std::abs(dy2);
-    if (dy2) dv2_step = dv2 / (float)std::abs(dy2);
-    if (dy2) dw2_step = dw2 / (float)std::abs(dy2);
-
+    if (dy2) du2_step = du2 / (float)abs(dy2);
+    if (dy2) dv2_step = dv2 / (float)abs(dy2);
+    if (dy2) dw2_step = dw2 / (float)abs(dy2);
 
     if (dy1)
     {
-        // Line 1 loop
         for (int i = y1; i <= y2; i++)
         {
             int ax = x1 + (float)(i - y1) * dax_step;
@@ -394,27 +409,35 @@ void Engine3d::TexturedTriangle(int x1, int y1, float u1, float v1, float w1,
                 tex_u = (1.0f - t) * tex_su + t * tex_eu;
                 tex_v = (1.0f - t) * tex_sv + t * tex_ev;
                 tex_w = (1.0f - t) * tex_sw + t * tex_ew;
-                Draw(j, i, texture->Sample(tex_u / tex_w, tex_v / tex_w));
+
+                if (tex_w > pDepthBuffer[i * ScreenWidth() + j])
+                {
+                    Draw(j, i, texture->Sample(tex_u / tex_w, tex_v / tex_w));
+                    pDepthBuffer[i * ScreenWidth() + j] = tex_w;
+                }
+                
                 t += tstep;
             }
+
         }
+    }
 
-        // Line change
-        dy1 = y3 - y2;
-        dx1 = x3 - x2;
-        dv1 = v3 - v2;
-        du1 = u3 - u2;
-        dw1 = w3 - w2;
+    dy1 = y3 - y2;
+    dx1 = x3 - x2;
+    dv1 = v3 - v2;
+    du1 = u3 - u2;
+    dw1 = w3 - w2;
 
-        if (dy1) dax_step = dx1 / (float)std::abs(dy1);
-        if (dy2) dbx_step = dx2 / (float)std::abs(dy2);
+    if (dy1) dax_step = dx1 / (float)abs(dy1);
+    if (dy2) dbx_step = dx2 / (float)abs(dy2);
 
-        du1_step = 0, dv1_step = 0;
-        if (dy1) du1_step = du1 / (float)std::abs(dy1);
-        if (dy1) dv1_step = dv1 / (float)std::abs(dy1);
-        if (dy1) dw1_step = dw1 / (float)std::abs(dy1);
+    du1_step = 0, dv1_step = 0;
+    if (dy1) du1_step = du1 / (float)abs(dy1);
+    if (dy1) dv1_step = dv1 / (float)abs(dy1);
+    if (dy1) dw1_step = dw1 / (float)abs(dy1);
 
-        // Line 2 loop
+    if (dy1)
+    {
         for (int i = y2; i <= y3; i++)
         {
             int ax = x2 + (float)(i - y2) * dax_step;
@@ -448,7 +471,12 @@ void Engine3d::TexturedTriangle(int x1, int y1, float u1, float v1, float w1,
                 tex_u = (1.0f - t) * tex_su + t * tex_eu;
                 tex_v = (1.0f - t) * tex_sv + t * tex_ev;
                 tex_w = (1.0f - t) * tex_sw + t * tex_ew;
-                Draw(j, i, texture->Sample(tex_u / tex_w, tex_v / tex_w));
+
+                if (tex_w > pDepthBuffer[i * ScreenWidth() + j])
+                {
+                    Draw(j, i, texture->Sample(tex_u / tex_w, tex_v / tex_w));
+                    pDepthBuffer[i * ScreenWidth() + j] = tex_w;
+                }
                 t += tstep;
             }
         }
