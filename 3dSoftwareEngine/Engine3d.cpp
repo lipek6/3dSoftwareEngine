@@ -21,7 +21,6 @@ bool Engine3d::OnUserCreate()
     //meshMech.LoadFromObjectFile("assets/UtahTeapot.obj");
     //meshMech.LoadFromObjectFile("assets/OlcAxis.obj");
     //meshMech.LoadFromObjectFile("assets/OlcMountains.obj");
-    meshMech.LoadFromObjectFile("../3dSoftwareEngine/assets/SpyroTriangulatedMap.obj", true);
 
     /*meshMech.vTriangle = {
     
@@ -50,7 +49,9 @@ bool Engine3d::OnUserCreate()
         Triangle({ {1.0f, 0.0f, 1.0f, 1.0f},    {0.0f, 0.0f, 0.0f, 1.0f},    {1.0f, 0.0f, 0.0f, 1.0f},		{0.0f, 1.0f, 1.0f},		{1.0f, 0.0f, 1.0f},		{1.0f, 1.0f, 1.0f}, olc::WHITE}),
     };*/
 
-    sprTexture1 = new olc::Sprite("../3dSoftwareEngine/assets/SpyroMapHigh.png");
+
+    meshMech.LoadFromObjectFile("assets/SpyroTriangulatedMap.obj", true);
+    sprTexture1 = new olc::Sprite("assets/SpyroMapHigh.png");
 
     matProjection = Matrix4x4::MakeProjection(90.0f, (float)ScreenHeight() / (float)ScreenWidth(), 0.1f, 1000.0f);
 
@@ -93,11 +94,6 @@ bool Engine3d::OnUserUpdate(float fElapsedTime)
 
 
 
-        
-    
-
-
-
     // MATRICES CREATION =====================================================================
     // fTheta += 1.0f * fElapsedTime;
     Matrix4x4 matRotateZ   = Matrix4x4::MakeRotationZ(fTheta);
@@ -114,6 +110,8 @@ bool Engine3d::OnUserUpdate(float fElapsedTime)
 
     Matrix4x4 matCamera = Matrix4x4::MakePointAt(vCamera, vTarget, vUp);
     Matrix4x4 matView   = Matrix4x4::MakeQuickInverse(matCamera);
+
+
 
 
 
@@ -168,7 +166,6 @@ bool Engine3d::OnUserUpdate(float fElapsedTime)
 
 
 
-
             // CLIPPING ----------------------------------------------------------------------
             int nClippedTriangles = 0;
             Triangle triClipped[2];
@@ -202,10 +199,13 @@ bool Engine3d::OnUserUpdate(float fElapsedTime)
                 triProjected.texture[2].w = 1.0f / triProjected.vertex[2].w;
 
 
+
                 // VIEW SCALING
                 triProjected.vertex[0] = triProjected.vertex[0] / triProjected.vertex[0].w;
                 triProjected.vertex[1] = triProjected.vertex[1] / triProjected.vertex[1].w;
                 triProjected.vertex[2] = triProjected.vertex[2] / triProjected.vertex[2].w;
+
+
 
                 // INVERSING THE INVERSED
                 triProjected.vertex[0].x *= -1.0f;
@@ -214,6 +214,8 @@ bool Engine3d::OnUserUpdate(float fElapsedTime)
                 triProjected.vertex[0].y *= -1.0f;
                 triProjected.vertex[1].y *= -1.0f;
                 triProjected.vertex[2].y *= -1.0f;
+
+
 
                 // OFFSET INTO VISIBLE NORMALISED SPACE
                 Vec3d vOffsetView(1.0f, 1.0f, 0.0f);
@@ -230,6 +232,8 @@ bool Engine3d::OnUserUpdate(float fElapsedTime)
                 triProjected.vertex[2].x *= 0.5f * (float)ScreenWidth();
                 triProjected.vertex[2].y *= 0.5f * (float)ScreenHeight();
 
+
+
                 // STORE THE TRIANGLE
                 vTrianglesToRasterize.push_back(triProjected);
             }
@@ -237,6 +241,7 @@ bool Engine3d::OnUserUpdate(float fElapsedTime)
     }
 
     
+
     // PAINTERS ALGORITHM ====================================================================    REMOVED FOR A DEPTH BUFFFER
     //std::sort(vTrianglesToRasterize.begin(), vTrianglesToRasterize.end(), [](const Triangle& triangle0, const Triangle& triangle1)
     //    {
@@ -251,7 +256,7 @@ bool Engine3d::OnUserUpdate(float fElapsedTime)
 
 
     // RENDER CLEANING ==========================================================================
-    Clear(olc::BLACK);
+    Clear({ 135, 206, 235 });
     for (int i = 0; i < ScreenWidth() * ScreenHeight(); i++)
         pDepthBuffer[i] = 0.0f;
 

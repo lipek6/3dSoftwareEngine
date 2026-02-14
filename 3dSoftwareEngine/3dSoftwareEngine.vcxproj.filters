@@ -90,5 +90,8 @@
     <Image Include="assets\SpyroMapHigh.png">
       <Filter>assets</Filter>
     </Image>
+    <Image Include="assets\SpyroMapLow.png">
+      <Filter>assets</Filter>
+    </Image>
   </ItemGroup>
 </Project>

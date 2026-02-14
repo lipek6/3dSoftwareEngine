@@ -17,7 +17,7 @@ private:
     float fYaw = 0.0f;
     float fTheta = 0.0f;
 
-    olc::Sprite* sprTexture1;
+    olc::Sprite* sprTexture1 = nullptr;
 
     float* pDepthBuffer = nullptr;
 
