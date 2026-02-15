@@ -36,7 +36,7 @@ bool Mesh::LoadFromObjectFile(std::string sFilename, bool bHasTexture)
                 Vec2d texture;
                 lineStream >> junkData >> junkData >> texture.u >> texture.v;
                 // A little hack for the spyro texture
-                texture.u = 1.0f - texture.u;
+                //texture.u = 1.0f - texture.u;         BUG
                 texture.v = 1.0f - texture.v;
                 vTexture.push_back(texture);
             }

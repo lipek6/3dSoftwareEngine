@@ -16,14 +16,14 @@
 int main()
 {
     Engine3d game;
-    if (game.Construct(256, 240, 4, 4))
-        game.Start();
-    else
-        return -1;
+    //if (game.Construct(256, 240, 4, 4))
+    //    game.Start();
+    //else
+    //    return -1;
 
     // HIGH DEF VERSION
-    //if (game.Construct(1920, 1080, 1, 1))
-    //  game.Start();
-    //else
-    //  return -1;
+    if (game.Construct(1920, 1080, 1, 1))
+      game.Start();
+    else
+      return -1;
 }

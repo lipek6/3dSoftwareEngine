@@ -17,41 +17,9 @@ bool Engine3d::OnUserCreate()
 {
     pDepthBuffer = new float[ScreenHeight() * ScreenWidth()];
 
-    //meshMech.LoadFromObjectFile("assets/Mech01.obj");
-    //meshMech.LoadFromObjectFile("assets/UtahTeapot.obj");
-    //meshMech.LoadFromObjectFile("assets/OlcAxis.obj");
-    //meshMech.LoadFromObjectFile("assets/OlcMountains.obj");
-
-    /*meshMech.vTriangle = {
-    
-        // SOUTH
-        Triangle({ {0.0f, 0.0f, 0.0f, 1.0f},    {0.0f, 1.0f, 0.0f, 1.0f},    {1.0f, 1.0f, 0.0f, 1.0f},		{0.0f, 1.0f, 1.0f},		{0.0f, 0.0f, 1.0f},		{1.0f, 0.0f, 1.0f}, olc::WHITE}),
-        Triangle({ {0.0f, 0.0f, 0.0f, 1.0f},    {1.0f, 1.0f, 0.0f, 1.0f},    {1.0f, 0.0f, 0.0f, 1.0f},		{0.0f, 1.0f, 1.0f},		{1.0f, 0.0f, 1.0f},		{1.0f, 1.0f, 1.0f}, olc::WHITE}),
-    
-        // EAST           																			   
-        Triangle({ {1.0f, 0.0f, 0.0f, 1.0f},    {1.0f, 1.0f, 0.0f, 1.0f},    {1.0f, 1.0f, 1.0f, 1.0f},		{0.0f, 1.0f, 1.0f},		{0.0f, 0.0f, 1.0f},		{1.0f, 0.0f, 1.0f}, olc::WHITE}),
-        Triangle({ {1.0f, 0.0f, 0.0f, 1.0f},    {1.0f, 1.0f, 1.0f, 1.0f},    {1.0f, 0.0f, 1.0f, 1.0f},		{0.0f, 1.0f, 1.0f},		{1.0f, 0.0f, 1.0f},		{1.0f, 1.0f, 1.0f}, olc::WHITE}),
-    
-        // NORTH           																			   
-        Triangle({ {1.0f, 0.0f, 1.0f, 1.0f},    {1.0f, 1.0f, 1.0f, 1.0f},    {0.0f, 1.0f, 1.0f, 1.0f},		{0.0f, 1.0f, 1.0f},		{0.0f, 0.0f, 1.0f},		{1.0f, 0.0f, 1.0f}, olc::WHITE}),
-        Triangle({ {1.0f, 0.0f, 1.0f, 1.0f},    {0.0f, 1.0f, 1.0f, 1.0f},    {0.0f, 0.0f, 1.0f, 1.0f},		{0.0f, 1.0f, 1.0f},		{1.0f, 0.0f, 1.0f},		{1.0f, 1.0f, 1.0f}, olc::WHITE}),
-
-        // WEST            																			   
-        Triangle({ {0.0f, 0.0f, 1.0f, 1.0f},    {0.0f, 1.0f, 1.0f, 1.0f},    {0.0f, 1.0f, 0.0f, 1.0f},		{0.0f, 1.0f, 1.0f},		{0.0f, 0.0f, 1.0f},		{1.0f, 0.0f, 1.0f}, olc::WHITE}),
-        Triangle({ {0.0f, 0.0f, 1.0f, 1.0f},    {0.0f, 1.0f, 0.0f, 1.0f},    {0.0f, 0.0f, 0.0f, 1.0f},		{0.0f, 1.0f, 1.0f},		{1.0f, 0.0f, 1.0f},		{1.0f, 1.0f, 1.0f}, olc::WHITE}),
-
-        // TOP             																			   
-        Triangle({ {0.0f, 1.0f, 0.0f, 1.0f},    {0.0f, 1.0f, 1.0f, 1.0f},    {1.0f, 1.0f, 1.0f, 1.0f},		{0.0f, 1.0f, 1.0f},		{0.0f, 0.0f, 1.0f},		{1.0f, 0.0f, 1.0f}, olc::WHITE}),
-        Triangle({ {0.0f, 1.0f, 0.0f, 1.0f},    {1.0f, 1.0f, 1.0f, 1.0f},    {1.0f, 1.0f, 0.0f, 1.0f},		{0.0f, 1.0f, 1.0f},		{1.0f, 0.0f, 1.0f},		{1.0f, 1.0f, 1.0f}, olc::WHITE}),
-
-        // BOTTOM          																			  
-        Triangle({ {1.0f, 0.0f, 1.0f, 1.0f},    {0.0f, 0.0f, 1.0f, 1.0f},    {0.0f, 0.0f, 0.0f, 1.0f},		{0.0f, 1.0f, 1.0f},		{0.0f, 0.0f, 1.0f},		{1.0f, 0.0f, 1.0f}, olc::WHITE}),
-        Triangle({ {1.0f, 0.0f, 1.0f, 1.0f},    {0.0f, 0.0f, 0.0f, 1.0f},    {1.0f, 0.0f, 0.0f, 1.0f},		{0.0f, 1.0f, 1.0f},		{1.0f, 0.0f, 1.0f},		{1.0f, 1.0f, 1.0f}, olc::WHITE}),
-    };*/
-
-
-    meshMech.LoadFromObjectFile("assets/SpyroTriangulatedMap.obj", true);
-    sprTexture1 = new olc::Sprite("assets/SpyroMapHigh.png");
+    meshThing.LoadFromObjectFile("assets/Elite.obj", true);
+    //meshThing.LoadFromObjectFile("assets/SpyroTriangulatedMap.obj", true);
+    sprTexture1 = new olc::Sprite("assets/Elite.png");
 
     matProjection = Matrix4x4::MakeProjection(90.0f, (float)ScreenHeight() / (float)ScreenWidth(), 0.1f, 1000.0f);
 
@@ -117,7 +85,7 @@ bool Engine3d::OnUserUpdate(float fElapsedTime)
 
     // RASTERIZATION PREPARATION =============================================================
     std::vector<Triangle> vTrianglesToRasterize;
-    for (Triangle& tri : meshMech.vTriangle)
+    for (Triangle& tri : meshThing.vTriangle)
     {
         // POSITIONING -----------------------------------------------------------------------
         Triangle triTransformed, triProjected, triViewed;
@@ -256,7 +224,11 @@ bool Engine3d::OnUserUpdate(float fElapsedTime)
 
 
     // RENDER CLEANING ==========================================================================
-    Clear({ 135, 206, 235 });
+    //Clear({ 135, 206, 235 });
+    //Clear(olc::BLACK);
+    Clear(olc::WHITE);
+
+
     for (int i = 0; i < ScreenWidth() * ScreenHeight(); i++)
         pDepthBuffer[i] = 0.0f;
 

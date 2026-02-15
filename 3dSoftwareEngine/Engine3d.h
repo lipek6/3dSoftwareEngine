@@ -10,7 +10,7 @@
 class Engine3d : public olc::PixelGameEngine
 {
 private:
-    Mesh meshMech;
+    Mesh meshThing;
     Matrix4x4 matProjection;
     Vec3d vCamera;
     Vec3d vLookDir;

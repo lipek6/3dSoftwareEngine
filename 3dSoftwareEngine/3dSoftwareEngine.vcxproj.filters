@@ -79,6 +79,9 @@
     <Text Include="assets\SpyroTriangulatedMap.obj">
       <Filter>assets</Filter>
     </Text>
+    <Text Include="assets\Elite.obj">
+      <Filter>assets</Filter>
+    </Text>
   </ItemGroup>
   <ItemGroup>
     <Image Include="assets\cardboard.png">
@@ -91,6 +94,9 @@
       <Filter>assets</Filter>
     </Image>
     <Image Include="assets\SpyroMapLow.png">
+      <Filter>assets</Filter>
+    </Image>
+    <Image Include="assets\Elite.png">
       <Filter>assets</Filter>
     </Image>
   </ItemGroup>
