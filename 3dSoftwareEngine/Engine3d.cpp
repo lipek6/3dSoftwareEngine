@@ -225,8 +225,8 @@ bool Engine3d::OnUserUpdate(float fElapsedTime)
 
     // RENDER CLEANING ==========================================================================
     //Clear({ 135, 206, 235 });
-    //Clear(olc::BLACK);
-    Clear(olc::WHITE);
+    Clear(olc::BLACK);
+    //Clear(olc::WHITE);
 
 
     for (int i = 0; i < ScreenWidth() * ScreenHeight(); i++)

@@ -2,7 +2,7 @@
 
 A purely software-based 3D Graphics Engine written in C++. This project demonstrates the fundamentals of 3D projection, rasterization, clipping, and texturing without relying on hardware acceleration (GPU) or modern 3D libraries like OpenGL, Vulkan or DirectX.
 
-*(PICTURE)*
+*PICTURE*
 
 ## About The Project
 
